@@ -48,6 +48,19 @@ public class Departamento {
         return "Departamento{" + "idDepartamento=" + idDepartamento + ", nombre=" + nombre + '}';
     }
     
-    
+    /**
+     * Método para comprobar si un departamento es nulo
+     * @return - boolean - True si el departamento es nulo, 
+     * false en caso contrario
+     */
+    public boolean isNull() {
+        boolean isNull = false;
+        
+        if (this.getIdDepartamento() == -1 && this.getNombre() == null) {
+            isNull = true;
+        }
+        
+        return isNull;
+    }
     
 }
