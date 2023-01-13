@@ -14,6 +14,12 @@ public class Empleados {
     public Empleados() {
         listaEmpleados = new ArrayList();
     }
+
+    public List<Empleado> getListaEmpleados() {
+        return listaEmpleados;
+    }
+    
+    
     
     // Métodos GET
     /**
@@ -44,6 +50,16 @@ public class Empleados {
      */
     public boolean deleteEmpleado( int idEmpleado ){
         return listaEmpleados.remove(getEmpleado(idEmpleado));
+    }
+    
+    /**
+     * Método para añadir un empleado a la lista
+     * @param emp - Empleado - empleado que se añadirá a la lista
+     * @return - boolean - Devuelve true si se ha insertado, false 
+     * en caso contrario
+     */
+    public boolean addEmpleado( Empleado emp ){
+        return listaEmpleados.add(emp);
     }
     
     

@@ -1,10 +1,13 @@
 package BD;
 
+import com.mysql.cj.protocol.Resultset;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelos.Departamento;
+import modelos.Departamentos;
 import modelos.Empleado;
+import modelos.Empleados;
 
 /**
  *
@@ -105,6 +108,7 @@ public class GestionBD {
             }
             
             // Nos desconectamos
+            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -146,6 +150,7 @@ public class GestionBD {
             }
             
             // Nos desconectamos de la BD
+            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -153,6 +158,125 @@ public class GestionBD {
         }
         
         return insertado;
+    }
+    
+    /**
+     * Método para borrar un empleado de la BD
+     * @param empleado - Empleado - empleado a borrar de la BD
+     * @return - boolean - Retorna true si lo ha borrado, en caso contrario
+     * retornará false.
+     */
+    public boolean borrarEmpleado( Empleado empleado ){
+        
+        boolean borrado = false;
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "DELETE * FROM empleados WHERE idEmpleado = ?"
+            );
+            
+            ps.setInt(1, empleado.getIdEmpleado());
+            
+            if (ps.execute()) {
+                borrado = true;
+            }
+            
+            ps.close();
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al borrar, " + ex.getMessage());
+        }
+        
+        return borrado;
+        
+    }
+    
+    /**
+     * Método para actualizar los datos de un empleado
+     * @param empOld - Empleado - empleado al que actualizaremos los datos
+     * @param empNew - Empleado - nuevos datos del empleado
+     * @return boolean - Devuelve true si lo ha podido actualizar, en caso
+     * contrario devolverá false
+     */
+    public boolean modificarEmpleado( Empleado empOld, Empleado empNew ) {
+        
+        boolean modificado = false;
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "UPDATE empleados SET nombre = ?, apellidos = ?,"
+                            + " salario = ?, email = ?, idDepartamento = ?"
+                            + " WHERE idEmpleado = ?"
+            );
+            
+            ps.setString(1, empNew.getNombre());
+            ps.setString(2, empNew.getApellido());
+            ps.setFloat(3, empNew.getSalario());
+            ps.setString(4, empNew.getEmail());
+            ps.setInt(5, empNew.getDpt().getIdDepartamento());
+            ps.setInt(6, empOld.getIdEmpleado());
+            
+            if (ps.execute()) {
+                modificado = true;
+            }
+            
+            ps.close();
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al actualizar, " + ex.getMessage());
+        }
+        
+        return modificado;
+        
+    }
+    
+    /**
+     * Método para listar todos los empleados de la tabla empleados
+     * @return Empleados - Nos devuelve una lista con todos los empleados
+     * de la tabla.
+     */
+    public Empleados listarEmpleados(){
+        
+        Empleados listaEmpleados = new Empleados();
+        Departamentos departamentos = new Departamentos();
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "SELECT * FROM empleados"
+            );
+            
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                Empleado empleado = new Empleado(rs.getInt(1), 
+                        rs.getString(2), rs.getString(3), 
+                        rs.getFloat(4), rs.getString(5), 
+                        departamentos.getDepartamento(
+                                rs.getInt(6)
+                        )
+                );
+                
+                listaEmpleados.addEmpleado(empleado);
+            }
+            
+            rs.close();
+            ps.close();
+            
+            desconectar();
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al recoger los datos, " + ex.getMessage());
+        }  
+        
+        return listaEmpleados;
+        
     }
     
     
