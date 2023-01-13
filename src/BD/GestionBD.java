@@ -19,12 +19,11 @@ public class GestionBD {
     private final String BD;
     private Connection conexion;
 
-    public GestionBD(String HOST, String USUARIO, String PASSWORD, String BD, Connection conexion) {
+    public GestionBD(String HOST, String USUARIO, String PASSWORD, String BD) {
         this.HOST = HOST;
         this.USUARIO = USUARIO;
         this.PASSWORD = PASSWORD;
         this.BD = BD;
-        this.conexion = conexion;
     }
 
     
