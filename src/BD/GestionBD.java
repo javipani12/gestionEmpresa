@@ -44,7 +44,7 @@ public class GestionBD {
             Class.forName("com.mysql.cj.jdbc.Driver");
             
             // Inicializamos la cadena de conexion
-            this.conexion = DriverManager.getConnection( "jdbc:mysql://" + HOST + "/" + BD, USUARIO, PASSWORD );
+            this.conexion = DriverManager.getConnection( "jdbc:mysql://" + HOST + "/" + BD + "?serverTimezone=UTC", USUARIO, PASSWORD );
             
         } catch(ClassNotFoundException e) {
             System.err.println("Error al cargar el driver MySQL, " + e.getMessage());
@@ -108,7 +108,6 @@ public class GestionBD {
             }
             
             // Nos desconectamos
-            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -116,6 +115,112 @@ public class GestionBD {
         }
         
         return insertado;
+    }
+    
+    /**
+     * Método para borrar un departamento de la BD
+     * @param departamento - Empleado - departamento a borrar de la BD
+     * @return - boolean - Retorna true si lo ha borrado, en caso contrario
+     * retornará false.
+     */
+    public boolean borrarDepartamento( Departamento departamento ){
+        
+        boolean borrado = false;
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "DELETE FROM departamentos "
+                            + "WHERE idDepartamento = ?"
+            );
+            
+            ps.setInt(1, departamento.getIdDepartamento());
+            
+            if (ps.execute()) {
+                borrado = ps.execute();
+            }
+            
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al borrar, " + ex.getMessage());
+        }
+        
+        return borrado;
+        
+    }
+    
+    /**
+     * Método para actualizar los datos de un departamento
+     * @param depOld - Departamento - departamento al que actualizaremos los datos
+     * @param depNew - Departamento - nuevos datos del departamento
+     * @return boolean - Devuelve true si lo ha podido actualizar, en caso
+     * contrario devolverá false
+     */
+    public boolean modificarDepartamento( Departamento depOld, Departamento depNew ) {
+        
+        boolean modificado = false;
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "UPDATE departamentos "
+                            + "SET nombre = ? "
+                            + "WHERE idDepartamento = ?"
+            );
+            
+            ps.setString(1, depNew.getNombre());
+            ps.setInt(2, depOld.getIdDepartamento());
+            
+            if (ps.execute()) {
+                modificado = true;
+            }
+            
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al actualizar, " + ex.getMessage());
+        }
+        
+        return modificado;
+        
+    }
+    
+    /**
+     * Método para listar todos los departamentos de la tabla departamentos
+     * @return Departamentos - Nos devuelve una lista con todos los departamentos
+     * de la tabla.
+     */
+    public Departamentos listarDepartamentos(){
+        
+        Departamentos listaDepartamentos = new Departamentos();
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "SELECT * FROM departamentos"
+            );
+            
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                Departamento departamento = new Departamento(rs.getInt(1), 
+                        rs.getString(2)
+                );
+                                
+                listaDepartamentos.add(departamento);
+            }
+            
+            desconectar();
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error al recoger los datos, " + ex.getMessage());
+        }  
+        
+        return listaDepartamentos;
+        
     }
     
     /**
@@ -150,7 +255,6 @@ public class GestionBD {
             }
             
             // Nos desconectamos de la BD
-            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -174,16 +278,15 @@ public class GestionBD {
         
         try {
             PreparedStatement ps = this.conexion.prepareStatement(
-                    "DELETE * FROM empleados WHERE idEmpleado = ?"
+                    "DELETE FROM empleados WHERE idEmpleado = ?"
             );
             
             ps.setInt(1, empleado.getIdEmpleado());
             
             if (ps.execute()) {
-                borrado = true;
+                borrado = ps.execute();
             }
             
-            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -209,9 +312,10 @@ public class GestionBD {
         
         try {
             PreparedStatement ps = this.conexion.prepareStatement(
-                    "UPDATE empleados SET nombre = ?, apellidos = ?,"
-                            + " salario = ?, email = ?, idDepartamento = ?"
-                            + " WHERE idEmpleado = ?"
+                    "UPDATE empleados "
+                            + "SET nombre = ?, apellidos = ?, "
+                            + "salario = ?, email = ?, idDepartamento = ? "
+                            + "WHERE idEmpleado = ?"
             );
             
             ps.setString(1, empNew.getNombre());
@@ -225,7 +329,6 @@ public class GestionBD {
                 modificado = true;
             }
             
-            ps.close();
             desconectar();
             
         } catch (SQLException ex) {
@@ -266,10 +369,6 @@ public class GestionBD {
                 
                 listaEmpleados.addEmpleado(empleado);
             }
-            
-            rs.close();
-            ps.close();
-            
             desconectar();
         } catch (SQLException ex) {
             System.err.println("Se ha producido un error al recoger los datos, " + ex.getMessage());

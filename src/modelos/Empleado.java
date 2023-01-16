@@ -85,6 +85,10 @@ public class Empleado {
     public void setDpt(Departamento dpt) {
         this.dpt = dpt;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Empleado{" + "idEmpleado=" + idEmpleado + ", nombre=" + nombre + ", apellido=" + apellido + ", salario=" + salario + ", email=" + email + ", dpt=" + dpt + '}';
+    }    
     
 }
