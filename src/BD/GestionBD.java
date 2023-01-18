@@ -224,6 +224,43 @@ public class GestionBD {
     }
     
     /**
+     * Método para buscar un departamento mediante su nombre
+     * @param nombreDepartamento - String - nombre del departamento a buscar 
+     * @return - Departamento - Si encuentra el departamento indicado
+     * nos devuelve todos sus datos, en caso contrario nos devuelve un 
+     * departamento nulo
+     */
+    public Departamento buscarDepartamento(String nombreDepartamento){
+        
+        Departamento dept = new Departamento();
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "SELECT * FROM departamentos WHERE nombre = ?"
+            );
+            
+            ps.setString(1, nombreDepartamento);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                dept.setIdDepartamento(rs.getInt(1));
+                dept.setNombre(rs.getString(2));
+            }
+            
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error");
+        }
+        
+        return dept;
+        
+    }
+    
+    /**
      * Método para insertar un empleado en la BD
      * @param empleado - Empleado - empleado a insertar
      * @return boolean - Devuelve true si se ha insertado, en caso contrario
@@ -378,6 +415,46 @@ public class GestionBD {
         
     }
     
-    
+    /**
+     * Método para buscar un empleado mediante su id
+     * @param - idEmpleado - int - id del empleado a buscar
+     * @return - Empleado - Si encuentra el empleado indicado
+     * nos devuelve todos sus datos, en caso contrario nos devuelve un 
+     * empleado nulo
+     */
+    public Empleado buscarEmpleado(int idEmpleado){
+        
+        Empleado emp = new Empleado();
+        Departamentos depts = new Departamentos();
+        
+        conectar();
+        
+        try {
+            PreparedStatement ps = this.conexion.prepareStatement(
+                    "SELECT * FROM empleados WHERE idEmpleado = ?"
+            );
+            
+            ps.setInt(1, idEmpleado);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                emp.setIdEmpleado(rs.getInt(1));
+                emp.setNombre(rs.getString(2));
+                emp.setApellido(rs.getString(3));
+                emp.setSalario(rs.getFloat(4));
+                emp.setEmail(rs.getString(5));
+                emp.setDpt(depts.getDepartamento(rs.getInt(6)));
+            }
+            
+            desconectar();
+            
+        } catch (SQLException ex) {
+            System.err.println("Se ha producido un error");
+        }
+        
+        return emp;
+        
+    }
     
 }
