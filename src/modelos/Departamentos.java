@@ -67,4 +67,13 @@ public class Departamentos {
         return departamento;
     }
     
+    /**
+     * 
+     * @param posicion
+     * @return 
+     */
+    public Departamento getDepartamentoBis( int posicion){
+        return listaDepartamentos.get(posicion);
+    }
+    
 }
