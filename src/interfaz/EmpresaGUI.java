@@ -129,6 +129,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
         jLabel3.setText("ID:");
 
         JTexFieldEmpleadoID.setEditable(false);
+        JTexFieldEmpleadoID.setEnabled(false);
         JTexFieldEmpleadoID.setPreferredSize(new java.awt.Dimension(70, 23));
 
         jLabel4.setText("Nombre:");
@@ -257,6 +258,11 @@ public class EmpresaGUI extends javax.swing.JFrame {
         PanelListadoDepartamentos.setBorder(javax.swing.BorderFactory.createTitledBorder("Listado:"));
 
         jListDpto.setModel(modeloJlistDptos);
+        jListDpto.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListDptoValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(jListDpto);
 
         javax.swing.GroupLayout PanelListadoDepartamentosLayout = new javax.swing.GroupLayout(PanelListadoDepartamentos);
@@ -281,6 +287,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
         jLabel1.setText("ID:");
 
         JTexFieldDptoID.setEditable(false);
+        JTexFieldDptoID.setEnabled(false);
         JTexFieldDptoID.setPreferredSize(new java.awt.Dimension(70, 23));
 
         jLabel2.setText("Nombre:");
@@ -389,6 +396,10 @@ public class EmpresaGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_JTexFieldEmpleadoEmailActionPerformed
 
+    private void jListDptoValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDptoValueChanged
+        mostrarDatosDpto();
+    }//GEN-LAST:event_jListDptoValueChanged
+
     /**
      * @param args the command line arguments
      */
@@ -473,5 +484,11 @@ public class EmpresaGUI extends javax.swing.JFrame {
         for (Empleado e : listaEmpleados.getListaEmpleados()) {
             modeloJlistEmpleados.addElement(e.getNombre());
         }
+    }
+    
+    private void mostrarDatosDpto(){
+        Departamento dep = listaDepartamentos.getDepartamentoBis(jListDpto.getSelectedIndex());
+        JTexFieldDptoID.setText(String.valueOf(dep.getIdDepartamento()));
+        JTexFieldDptoNombre.setText(String.valueOf(dep.getNombre()));
     }
 }

@@ -68,9 +68,10 @@ public class Departamentos {
     }
     
     /**
-     * 
-     * @param posicion
-     * @return 
+     * Método para obtener el departamento que se encuentra en la posición
+     * que se le pasa como parámetro
+     * @param posicion - int - Posición sobre la que queremos buscar
+     * @return - Departamento - Nos devuelve el departamento encontrado
      */
     public Departamento getDepartamentoBis( int posicion){
         return listaDepartamentos.get(posicion);
