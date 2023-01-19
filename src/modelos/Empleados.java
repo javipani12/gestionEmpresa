@@ -62,6 +62,16 @@ public class Empleados {
         return listaEmpleados.add(emp);
     }
     
+    /**
+     * Método que nos devuelve el empleado que se encuentra en la posición
+     * que se recibe como parámetro
+     * @param posicion - int - Posición sobre la que vamos a buscar
+     * @return - Empleado - Nos devuelve el empleado encontrado
+     */
+    public Empleado getEmpleadoBis( int posicion ) {
+        return listaEmpleados.get(posicion);
+    }
+    
     
     
 }

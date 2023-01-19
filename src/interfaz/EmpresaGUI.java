@@ -472,6 +472,10 @@ public class EmpresaGUI extends javax.swing.JFrame {
     private javax.swing.JSpinner spinnerEmpleadoSalario;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Método para cargar los Departamentos de la BD en el jList de
+     * Departamentos
+     */
     private void cargarDepartamentos() {
         // Debemos recoger los datos de listaDepartamentos y cargarlas en su jList
         for (Departamento d : listaDepartamentos.getListaDepartamentos()) {
@@ -479,16 +483,39 @@ public class EmpresaGUI extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método para cargar los Empleados de la BD en el jList de Empleados
+     */
     private void cargarEmpleados() {
         // Debemos recoger los datos de listaEmpleados y cargarlas en su jList
         for (Empleado e : listaEmpleados.getListaEmpleados()) {
             modeloJlistEmpleados.addElement(e.getNombre());
         }
     }
-    
-    private void mostrarDatosDpto(){
-        Departamento dep = listaDepartamentos.getDepartamentoBis(jListDpto.getSelectedIndex());
+
+    /**
+     * Método para cargar los datos del Departamento seleccionado en Detalles
+     */
+    private void mostrarDatosDpto() {
+        Departamento dep = listaDepartamentos.getDepartamentoBis(
+                jListDpto.getSelectedIndex()
+        );
         JTexFieldDptoID.setText(String.valueOf(dep.getIdDepartamento()));
         JTexFieldDptoNombre.setText(String.valueOf(dep.getNombre()));
+    }
+
+    /**
+     * Método para cargar los datos del Empleado seleccionado en Detalles
+     */
+    private void mostrarDatosEmpleados() {
+        Empleado emp = listaEmpleados.getEmpleadoBis(
+                jListEmpleados.getSelectedIndex()
+        );
+        JTexFieldEmpleadoID.setText(String.valueOf(emp.getIdEmpleado()));
+        JTexFieldEmpleadoNombre.setText(emp.getNombre());
+        JTexFieldEmpleadoApellidos.setText(emp.getApellido());
+        spinnerEmpleadoSalario.setValue(emp.getSalario());
+        JTexFieldEmpleadoEmail.setText(emp.getEmail());
+        CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
     }
 }
