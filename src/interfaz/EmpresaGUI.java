@@ -416,7 +416,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_BtBorrarDptoActionPerformed
 
     private void BtBorrarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBorrarEmpleadoActionPerformed
-        // TODO add your handling code here:
+        limpiarDetallesEmpleados();
     }//GEN-LAST:event_BtBorrarEmpleadoActionPerformed
 
     private void JTexFieldEmpleadoEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTexFieldEmpleadoEmailActionPerformed
@@ -432,7 +432,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jListEmpleadosValueChanged
 
     private void BtNuevoDptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtNuevoDptoActionPerformed
-        limpiarFormularioDepartamento();
+        limpiarDetallesDepartamento();
     }//GEN-LAST:event_BtNuevoDptoActionPerformed
 
     private void BtGuardarDptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtGuardarDptoActionPerformed
@@ -523,6 +523,10 @@ public class EmpresaGUI extends javax.swing.JFrame {
     private javax.swing.JSpinner spinnerEmpleadoSalario;
     // End of variables declaration//GEN-END:variables
 
+    
+    // --------------- MÉTODOS DEPARTAMENTO ---------------------
+    
+    
     /**
      * Método para cargar los Departamentos de la BD en el jList de
      * Departamentos
@@ -539,23 +543,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
             modeloJlistDptos.addElement(d.getNombre());
         }
     }
-
-    /**
-     * Método para cargar los Empleados de la BD en el jList de Empleados
-     */
-    private void cargarEmpleados() {
-        // Limpiamos el listado
-        modeloJlistEmpleados.clear();
-        
-        // Actualizar el listado
-        listaEmpleados = conexion.listarEmpleados();
-        
-        // Debemos recoger los datos de listaEmpleados y cargarlas en su jList
-        for (Empleado e : listaEmpleados.getListaEmpleados()) {
-            modeloJlistEmpleados.addElement(e.getNombre());
-        }
-    }
-
+    
     /**
      * Método para cargar los datos del Departamento seleccionado en Detalles
      * @param i - Índice del departamento seleccionado
@@ -569,31 +557,11 @@ public class EmpresaGUI extends javax.swing.JFrame {
         }
         
     }
-
-    /**
-     * Método para cargar los datos del Empleado seleccionado en Detalles
-     * @param i - Índice del empleado seleccionado
-     */
-    private void mostrarDatosEmpleados(int i) {
-        if ( i >= 0) {
-            Empleado emp = listaEmpleados.getEmpleadoBis(i);
-        
-            JTexFieldEmpleadoID.setText(String.valueOf(emp.getIdEmpleado()));
-            JTexFieldEmpleadoNombre.setText(emp.getNombre());
-            JTexFieldEmpleadoApellidos.setText(emp.getApellido());
-            spinnerEmpleadoSalario.setValue(emp.getSalario());
-            JTexFieldEmpleadoEmail.setText(emp.getEmail());
-            CbEmpleadosDpto.removeAllItems();
-            CbEmpleadosDpto.addItem(emp.getDpt().getNombre());
-            CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
-        }
-        
-    }
-
+    
     /**
      * Borra el contenido de los campos de Detalles del Departamento
      */
-    private void limpiarFormularioDepartamento() {
+    private void limpiarDetallesDepartamento() {
         
         JTexFieldDptoID.setText("");
         JTexFieldDptoNombre.setText("");
@@ -632,8 +600,8 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }
     
     /**
-     * 
-     * @param dep 
+     * Método para borrar un departamento de la BD
+     * @param dep Departamento - Departamento que queremos borrar
      */
     private void borrarDepartamento( Departamento dep ) {
         
@@ -654,4 +622,57 @@ public class EmpresaGUI extends javax.swing.JFrame {
         
         
     }
+    
+    
+    
+    // --------------- MÉTODOS DEPARTAMENTO ---------------------
+    
+    
+    /**
+     * Método para cargar los Empleados de la BD en el jList de Empleados
+     */
+    private void cargarEmpleados() {
+        // Limpiamos el listado
+        modeloJlistEmpleados.clear();
+        
+        // Actualizar el listado
+        listaEmpleados = conexion.listarEmpleados();
+        
+        // Debemos recoger los datos de listaEmpleados y cargarlas en su jList
+        for (Empleado e : listaEmpleados.getListaEmpleados()) {
+            modeloJlistEmpleados.addElement(e.getNombre());
+        }
+    }
+
+    
+
+    /**
+     * Método para cargar los datos del Empleado seleccionado en Detalles
+     * @param i - Índice del empleado seleccionado
+     */
+    private void mostrarDatosEmpleados(int i) {
+        if ( i >= 0) {
+            Empleado emp = listaEmpleados.getEmpleadoBis(i);
+        
+            JTexFieldEmpleadoID.setText(String.valueOf(emp.getIdEmpleado()));
+            JTexFieldEmpleadoNombre.setText(emp.getNombre());
+            JTexFieldEmpleadoApellidos.setText(emp.getApellido());
+            spinnerEmpleadoSalario.setValue(emp.getSalario());
+            JTexFieldEmpleadoEmail.setText(emp.getEmail());
+            CbEmpleadosDpto.removeAllItems();
+            CbEmpleadosDpto.addItem(emp.getDpt().getNombre());
+            CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
+        }
+        
+    }
+    
+    
+    private void limpiarDetallesEmpleados(){
+        JTexFieldEmpleadoID.setText("");
+        JTexFieldEmpleadoNombre.setText("");
+        JTexFieldEmpleadoApellidos.setText("");
+        spinnerEmpleadoSalario.setValue("");
+        JTexFieldEmpleadoEmail.setText("");
+    }
+    
 }
