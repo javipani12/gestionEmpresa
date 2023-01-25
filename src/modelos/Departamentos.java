@@ -77,4 +77,12 @@ public class Departamentos {
         return listaDepartamentos.get(posicion);
     }
     
+    /**
+     * Método para obtener el tamaño de la lista de Departamentos
+     * @return int - Tamaño de la lista
+     */
+    public int size(){
+        return listaDepartamentos.size();
+    }
+    
 }

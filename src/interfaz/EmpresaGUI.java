@@ -105,6 +105,11 @@ public class EmpresaGUI extends javax.swing.JFrame {
         PanelListadoEmpleados.setBorder(javax.swing.BorderFactory.createTitledBorder("Listado:"));
 
         jListEmpleados.setModel(modeloJlistEmpleados);
+        jListEmpleados.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListEmpleadosValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(jListEmpleados);
 
         javax.swing.GroupLayout PanelListadoEmpleadosLayout = new javax.swing.GroupLayout(PanelListadoEmpleados);
@@ -293,8 +298,18 @@ public class EmpresaGUI extends javax.swing.JFrame {
         jLabel2.setText("Nombre:");
 
         BtGuardarDpto.setText("GUARDAR");
+        BtGuardarDpto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtGuardarDptoActionPerformed(evt);
+            }
+        });
 
         BtNuevoDpto.setText("NUEVO");
+        BtNuevoDpto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtNuevoDptoActionPerformed(evt);
+            }
+        });
 
         BtBorrarDpto.setText("BORRAR");
         BtBorrarDpto.addActionListener(new java.awt.event.ActionListener() {
@@ -385,7 +400,19 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtBorrarDptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBorrarDptoActionPerformed
-        // TODO add your handling code here:
+        // Creamos un objeto Departamento
+        Departamento dep = new Departamento();
+        
+        // Asignamos los valores de la interfaz
+        // Comprobamos que el ID existe
+        if (!JTexFieldDptoID.getText().isBlank()) {
+            dep.setIdDepartamento(Integer.parseInt(JTexFieldDptoID.getText()));
+        }
+        
+        dep.setNombre(JTexFieldDptoNombre.getText());
+        
+        // Usamos el método para borrar el departamento
+        borrarDepartamento(dep);
     }//GEN-LAST:event_BtBorrarDptoActionPerformed
 
     private void BtBorrarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBorrarEmpleadoActionPerformed
@@ -397,8 +424,32 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_JTexFieldEmpleadoEmailActionPerformed
 
     private void jListDptoValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDptoValueChanged
-        mostrarDatosDpto();
+        mostrarDatosDpto(jListDpto.getSelectedIndex());
     }//GEN-LAST:event_jListDptoValueChanged
+
+    private void jListEmpleadosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListEmpleadosValueChanged
+        mostrarDatosEmpleados(jListEmpleados.getSelectedIndex());
+    }//GEN-LAST:event_jListEmpleadosValueChanged
+
+    private void BtNuevoDptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtNuevoDptoActionPerformed
+        limpiarFormularioDepartamento();
+    }//GEN-LAST:event_BtNuevoDptoActionPerformed
+
+    private void BtGuardarDptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtGuardarDptoActionPerformed
+        // Creamos un objeto departamento
+        Departamento dep = new Departamento();
+        
+        // Asignamos los valores de la interfaz
+        // Comprobamos que el ID existe
+        if (!JTexFieldDptoID.getText().isBlank()) {
+            dep.setIdDepartamento(Integer.parseInt(JTexFieldDptoID.getText()));
+        }
+        
+        dep.setNombre(JTexFieldDptoNombre.getText());
+        
+        // Usamos el método para guardar el departamento
+        guardarDepartamento(dep);
+    }//GEN-LAST:event_BtGuardarDptoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -477,6 +528,12 @@ public class EmpresaGUI extends javax.swing.JFrame {
      * Departamentos
      */
     private void cargarDepartamentos() {
+        // Limpiar el listado 
+        modeloJlistDptos.clear();
+        
+        // Actualizar el listado
+        listaDepartamentos = conexion.listarDepartamentos();
+        
         // Debemos recoger los datos de listaDepartamentos y cargarlas en su jList
         for (Departamento d : listaDepartamentos.getListaDepartamentos()) {
             modeloJlistDptos.addElement(d.getNombre());
@@ -487,6 +544,12 @@ public class EmpresaGUI extends javax.swing.JFrame {
      * Método para cargar los Empleados de la BD en el jList de Empleados
      */
     private void cargarEmpleados() {
+        // Limpiamos el listado
+        modeloJlistEmpleados.clear();
+        
+        // Actualizar el listado
+        listaEmpleados = conexion.listarEmpleados();
+        
         // Debemos recoger los datos de listaEmpleados y cargarlas en su jList
         for (Empleado e : listaEmpleados.getListaEmpleados()) {
             modeloJlistEmpleados.addElement(e.getNombre());
@@ -495,27 +558,100 @@ public class EmpresaGUI extends javax.swing.JFrame {
 
     /**
      * Método para cargar los datos del Departamento seleccionado en Detalles
+     * @param i - Índice del departamento seleccionado
      */
-    private void mostrarDatosDpto() {
-        Departamento dep = listaDepartamentos.getDepartamentoBis(
-                jListDpto.getSelectedIndex()
-        );
-        JTexFieldDptoID.setText(String.valueOf(dep.getIdDepartamento()));
-        JTexFieldDptoNombre.setText(String.valueOf(dep.getNombre()));
+    private void mostrarDatosDpto(int i) {
+        if ( i >= 0) {
+            Departamento dep = listaDepartamentos.getDepartamentoBis(i);
+            JTexFieldDptoID.setText(String.valueOf(dep.getIdDepartamento()));
+            JTexFieldDptoNombre.setText(String.valueOf(dep.getNombre()));
+            jListDpto.setSelectedIndex(i);
+        }
+        
     }
 
     /**
      * Método para cargar los datos del Empleado seleccionado en Detalles
+     * @param i - Índice del empleado seleccionado
      */
-    private void mostrarDatosEmpleados() {
-        Empleado emp = listaEmpleados.getEmpleadoBis(
-                jListEmpleados.getSelectedIndex()
-        );
-        JTexFieldEmpleadoID.setText(String.valueOf(emp.getIdEmpleado()));
-        JTexFieldEmpleadoNombre.setText(emp.getNombre());
-        JTexFieldEmpleadoApellidos.setText(emp.getApellido());
-        spinnerEmpleadoSalario.setValue(emp.getSalario());
-        JTexFieldEmpleadoEmail.setText(emp.getEmail());
-        CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
+    private void mostrarDatosEmpleados(int i) {
+        if ( i >= 0) {
+            Empleado emp = listaEmpleados.getEmpleadoBis(i);
+        
+            JTexFieldEmpleadoID.setText(String.valueOf(emp.getIdEmpleado()));
+            JTexFieldEmpleadoNombre.setText(emp.getNombre());
+            JTexFieldEmpleadoApellidos.setText(emp.getApellido());
+            spinnerEmpleadoSalario.setValue(emp.getSalario());
+            JTexFieldEmpleadoEmail.setText(emp.getEmail());
+            CbEmpleadosDpto.removeAllItems();
+            CbEmpleadosDpto.addItem(emp.getDpt().getNombre());
+            CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
+        }
+        
+    }
+
+    /**
+     * Borra el contenido de los campos de Detalles del Departamento
+     */
+    private void limpiarFormularioDepartamento() {
+        
+        JTexFieldDptoID.setText("");
+        JTexFieldDptoNombre.setText("");
+        
+    }
+    
+    /**
+     * Método para guardar un departamento nuevo en la BD o actualizar uno 
+     * que ya exista en ella
+     * @param dep Departamento - Departamento a guardar
+     */
+    private void guardarDepartamento( Departamento dep ){
+        
+        if ( dep.getIdDepartamento() == -1 ) {
+            // No está insertado, lo insertamos
+            conexion.insertarDepartamento(dep);
+            // Mostramos el último departamento insertado
+            cargarDepartamentos();
+            jListDpto.setSelectedIndex(listaDepartamentos.size() - 1);
+            
+        } else {
+            // Si ya tiene un ID asignado, actualizar
+            conexion.modificarDepartamento(dep, dep);
+            
+            // Guardamos posicion actual del JList
+            int posSel = jListDpto.getSelectedIndex();
+            
+            // Actualizamos el listado de dptos
+            cargarDepartamentos();
+            
+            // Establecer posicion anterior del jlist
+            jListDpto.setSelectedIndex(posSel);
+        
+        }
+        
+    }
+    
+    /**
+     * 
+     * @param dep 
+     */
+    private void borrarDepartamento( Departamento dep ) {
+        
+        // Comprobamos que el dpto a borrar es válido
+        if (dep.getIdDepartamento() > -1) {
+            
+            conexion.borrarDepartamento(dep);
+            
+            // Actualizamos el listado de dptos
+            cargarDepartamentos();
+            
+            // Seleccionamos el último departamento
+            jListDpto.setSelectedIndex(listaDepartamentos.size() - 1);
+            
+        } else {
+            System.err.println("El Departamento no existe en la BD");
+        }
+        
+        
     }
 }
