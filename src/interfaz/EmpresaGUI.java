@@ -25,11 +25,12 @@ public class EmpresaGUI extends javax.swing.JFrame {
     Departamentos listaDepartamentos;
     Empleados listaEmpleados;
 
-    // Modelo JList y ComboBox de Departamentoa y Empleados
+    // Modelo JList de Departamentos y Empleados
     DefaultListModel modeloJlistDptos;
-    DefaultComboBoxModel modeloComboDptos;
     DefaultListModel modeloJlistEmpleados;
-    DefaultComboBoxModel modeloComboEmpleados;
+    
+    // Modelo ComboBox para Empleados
+    DefaultComboBoxModel modeloComboDepartamentosEmp;
 
     /**
      * Creates new form Interfaz
@@ -38,22 +39,25 @@ public class EmpresaGUI extends javax.swing.JFrame {
         // Inicializamos los datos de Modelos
         modeloJlistDptos = new DefaultListModel();
         modeloJlistEmpleados = new DefaultListModel();
-
-        initComponents();
+        modeloComboDepartamentosEmp = new DefaultComboBoxModel();
 
         // Inicializamos listado de departamentos y empleados
         listaDepartamentos = new Departamentos();
         listaEmpleados = new Empleados();
 
+        // Creamos la conexión a la BD
         conexion = new GestionBD("localhost", "javier",
                 "javier", "empresa"
         );
 
+        // Cargamos los departamentos y los empleados
         listaDepartamentos = conexion.listarDepartamentos();
         listaEmpleados = conexion.listarEmpleados();
-
+        
         cargarDepartamentos();
         cargarEmpleados();
+        
+        initComponents();
 
     }
 
@@ -140,8 +144,18 @@ public class EmpresaGUI extends javax.swing.JFrame {
         jLabel4.setText("Nombre:");
 
         BtGuardarEmpleado.setText("GUARDAR");
+        BtGuardarEmpleado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtGuardarEmpleadoActionPerformed(evt);
+            }
+        });
 
         BtNuevoEmpleado.setText("NUEVO");
+        BtNuevoEmpleado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtNuevoEmpleadoActionPerformed(evt);
+            }
+        });
 
         BtBorrarEmpleado.setText("BORRAR");
         BtBorrarEmpleado.addActionListener(new java.awt.event.ActionListener() {
@@ -156,13 +170,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
 
         jLabel7.setText("Email");
 
-        JTexFieldEmpleadoEmail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JTexFieldEmpleadoEmailActionPerformed(evt);
-            }
-        });
-
-        CbEmpleadosDpto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CbEmpleadosDpto.setModel(modeloComboDepartamentosEmp);
 
         jLabel8.setText("Departamento");
 
@@ -416,12 +424,15 @@ public class EmpresaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_BtBorrarDptoActionPerformed
 
     private void BtBorrarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBorrarEmpleadoActionPerformed
-        limpiarDetallesEmpleados();
+        // Creamos un objeto empleado
+        Empleado emp = new Empleado();
+        
+        if (!JTexFieldEmpleadoID.getText().isBlank()) {
+            emp.setIdEmpleado(Integer.parseInt(JTexFieldEmpleadoID.getText()));
+        }
+        
+        borrarEmpleado(emp);
     }//GEN-LAST:event_BtBorrarEmpleadoActionPerformed
-
-    private void JTexFieldEmpleadoEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTexFieldEmpleadoEmailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTexFieldEmpleadoEmailActionPerformed
 
     private void jListDptoValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDptoValueChanged
         mostrarDatosDpto(jListDpto.getSelectedIndex());
@@ -450,6 +461,28 @@ public class EmpresaGUI extends javax.swing.JFrame {
         // Usamos el método para guardar el departamento
         guardarDepartamento(dep);
     }//GEN-LAST:event_BtGuardarDptoActionPerformed
+
+    private void BtNuevoEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtNuevoEmpleadoActionPerformed
+        limpiarDetallesEmpleados();
+    }//GEN-LAST:event_BtNuevoEmpleadoActionPerformed
+
+    private void BtGuardarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtGuardarEmpleadoActionPerformed
+        // Creamos un objeto empleado
+        Empleado emp = new Empleado();
+        
+        if (!JTexFieldEmpleadoID.getText().isBlank()) {
+            emp.setIdEmpleado(Integer.parseInt(JTexFieldEmpleadoID.getText()));
+        }
+        
+        // Asignamos los valores al empleado
+        emp.setNombre(JTexFieldEmpleadoNombre.getText());
+        emp.setApellido(JTexFieldEmpleadoApellidos.getText());
+        emp.setSalario(Float.parseFloat(spinnerEmpleadoSalario.getValue().toString()));
+        emp.setEmail(JTexFieldEmpleadoEmail.getText());
+        emp.setDpt(listaDepartamentos.getDepartamentoBis(CbEmpleadosDpto.getSelectedIndex()));
+        
+        guardarEmpleado(emp);
+    }//GEN-LAST:event_BtGuardarEmpleadoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -534,6 +567,9 @@ public class EmpresaGUI extends javax.swing.JFrame {
     private void cargarDepartamentos() {
         // Limpiar el listado 
         modeloJlistDptos.clear();
+        // Limpiamos el combobox de detalles de los empleados
+        modeloComboDepartamentosEmp.removeAllElements();
+        
         
         // Actualizar el listado
         listaDepartamentos = conexion.listarDepartamentos();
@@ -541,6 +577,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
         // Debemos recoger los datos de listaDepartamentos y cargarlas en su jList
         for (Departamento d : listaDepartamentos.getListaDepartamentos()) {
             modeloJlistDptos.addElement(d.getNombre());
+            modeloComboDepartamentosEmp.addElement(d.getNombre());
         }
     }
     
@@ -625,7 +662,7 @@ public class EmpresaGUI extends javax.swing.JFrame {
     
     
     
-    // --------------- MÉTODOS DEPARTAMENTO ---------------------
+    // --------------- MÉTODOS EMPLEADOS ---------------------
     
     
     /**
@@ -659,20 +696,62 @@ public class EmpresaGUI extends javax.swing.JFrame {
             JTexFieldEmpleadoApellidos.setText(emp.getApellido());
             spinnerEmpleadoSalario.setValue(emp.getSalario());
             JTexFieldEmpleadoEmail.setText(emp.getEmail());
-            CbEmpleadosDpto.removeAllItems();
-            CbEmpleadosDpto.addItem(emp.getDpt().getNombre());
             CbEmpleadosDpto.setSelectedItem(emp.getDpt().getNombre());
         }
         
     }
     
-    
+    /**
+     * Método para limpiar todos los campos de Detalles del Empleado
+     */
     private void limpiarDetallesEmpleados(){
         JTexFieldEmpleadoID.setText("");
         JTexFieldEmpleadoNombre.setText("");
         JTexFieldEmpleadoApellidos.setText("");
-        spinnerEmpleadoSalario.setValue("");
+        spinnerEmpleadoSalario.setValue(1017);
         JTexFieldEmpleadoEmail.setText("");
+        CbEmpleadosDpto.setSelectedItem(null);
+    }
+
+    /**
+     * Método para actualizar o insertar un empleado en la BD, esto se hará en 
+     * función de si el Empleado que se recibe como parámetro tiene o no id 
+     * respectivamente
+     * @param emp Empleado - Empleado que vamos a actualizar o añadir
+     */
+    private void guardarEmpleado(Empleado emp) {
+        if (emp.getIdEmpleado() == -1) {
+            // Insertamos el empleado
+            conexion.insertarEmpleado(emp);
+            // Actualizamos la lista de empleados que se muesta
+            cargarEmpleados();
+            // Seleccionamos el último empleado
+            jListEmpleados.setSelectedIndex(listaEmpleados.size() - 1);
+        } else {
+            // Actualizamos los ddatos del empleado
+            conexion.modificarEmpleado(emp, emp);
+            // Obtenemos la posición seleccionada
+            int posSel = jListEmpleados.getSelectedIndex();
+            // Actualizamos la lista de empleados que se muesta
+            cargarEmpleados();
+            // Seleccionamos el último empleado
+            jListEmpleados.setSelectedIndex(posSel);
+        }
+    }
+
+    /**
+     * Método para borrar un Empleado de la BD
+     * @param emp Empleado - Empleado que queremos borrar
+     */
+    private void borrarEmpleado(Empleado emp) {
+        if (emp.getIdEmpleado() > -1) {
+            // Borramos el empleado
+            conexion.borrarEmpleado(emp);
+            // Actualizamos la lista de empleados que se muesta
+            cargarEmpleados();
+            // Seleccionamos el último empleado
+            jListEmpleados.setSelectedIndex(listaEmpleados.size() - 1);
+        }
     }
     
 }

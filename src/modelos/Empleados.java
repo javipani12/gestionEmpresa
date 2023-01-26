@@ -41,6 +41,17 @@ public class Empleados {
         return empleadoEncontrado;
     }
     
+    /**
+     * Método que nos devuelve el empleado que se encuentra en la posición
+     * que se recibe como parámetro
+     * @param posicion - int - Posición sobre la que vamos a buscar
+     * @return - Empleado - Nos devuelve el empleado encontrado
+     */
+    public Empleado getEmpleadoBis( int posicion ) {
+        return listaEmpleados.get(posicion);
+    }
+    
+    
     // Métodos SET
     /**
      * Método para eliminar un empleado de lista de empleados
@@ -63,13 +74,11 @@ public class Empleados {
     }
     
     /**
-     * Método que nos devuelve el empleado que se encuentra en la posición
-     * que se recibe como parámetro
-     * @param posicion - int - Posición sobre la que vamos a buscar
-     * @return - Empleado - Nos devuelve el empleado encontrado
+     * Método para obtener el tamaño de la lista de Empleados
+     * @return int - Tamaño de la lista
      */
-    public Empleado getEmpleadoBis( int posicion ) {
-        return listaEmpleados.get(posicion);
+    public int size(){
+        return listaEmpleados.size();
     }
     
     

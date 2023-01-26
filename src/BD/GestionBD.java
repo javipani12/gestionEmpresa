@@ -390,7 +390,9 @@ public class GestionBD {
         
         try {
             PreparedStatement ps = this.conexion.prepareStatement(
-                    "SELECT * FROM empleados"
+                    "SELECT * FROM empleados INNER JOIN Departamentos "
+                            + " ON Departamentos.idDepartamento = "
+                            + " empleados.idDepartamento"
             );
             
             ResultSet rs = ps.executeQuery();
@@ -398,10 +400,11 @@ public class GestionBD {
             while(rs.next()) {
                 Empleado empleado = new Empleado(rs.getInt(1), 
                         rs.getString(2), rs.getString(3), 
-                        rs.getFloat(4), rs.getString(5), 
-                        departamentos.getDepartamento(
-                                rs.getInt(6)
+                        rs.getFloat(4), rs.getString(5),
+                        new Departamento(rs.getInt(6), 
+                                           rs.getString(8)
                         )
+                        
                 );
                 
                 listaEmpleados.addEmpleado(empleado);
